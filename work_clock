@@ -1,0 +1,36 @@
+#!/usr/bin/python3
+
+from os import name
+from time import time
+from argparse import ArgumentParser
+
+def main(i = 0, log=None):
+    start = time()
+    print("Write something and press enter to stop the clock. Type 'exit' to exit.")
+    msg = input("> ")
+    if msg.lower() == "exit":
+        return
+    now = time()
+    diff = now - start
+    diff_seconds = int(diff % 60)
+    diff_minutes = int((diff / 60) % 60)
+    diff_hours = int((diff / 60) / 60)
+    entry = f"[{i}] - {msg} - {diff_hours:02}:{diff_minutes:02}:{diff_seconds:02}"
+    print(entry)
+    if log is not None:
+        log.write(f"{entry}\n")
+        log.flush()
+
+    main(i + 1, log)
+
+
+if __name__ == "__main__":
+    parser = ArgumentParser("Tracks time spent on assignments and logs them to the console or a file.")
+    parser.add_argument("--file", help="Path to a file where the timestamps should be logged. Optional.", type=str, required=False, default="-")
+    args = parser.parse_args()
+    if args.file != "-":
+        with open(args.file, "w") as fp:
+            main(log=fp)
+    else:
+        main()
+    pass
